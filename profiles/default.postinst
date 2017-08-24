@@ -1,0 +1,4 @@
+#!/bin/sh
+
+systemctl enable salt-minion
+systemctl start salt-minion
