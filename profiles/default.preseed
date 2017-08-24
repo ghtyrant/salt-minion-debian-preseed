@@ -1,5 +1,10 @@
 # Keymaps / Locals
-d-i debian-installer/locale string en_US
+d-i debian-installer/language string en
+d-i debian-installer/country string AT
+d-i debian-installer/locale string en_US.UTF-8
+
+d-i keymap select us
+d-i console-keymaps-at/keymap select us
 d-i keyboard-configuration/xkb-keymap select us
 
 # Automatic network configuration
@@ -9,8 +14,9 @@ d-i netcfg/get_domain string unassigned-domain
 
 # Mirror Setup
 d-i mirror/country string manual
-d-i mirror/http/hostname string debian.anexia.at
-d-i mirror/http/directory string /debian
+#d-i mirror/http/hostname string debian.anexia.at
+d-i mirror/http/hostname string ftp.us.debian.org
+d-i mirror/http/directory string /debian/
 d-i mirror/http/proxy string
 
 # Do not create a user account
@@ -43,11 +49,16 @@ d-i apt-setup/local0/key string https://repo.saltstack.com/apt/debian/9/amd64/la
 d-i apt-setup/local0/repository string http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main
 
 # Install standard packages
+base-installer base-installer/install-recommends boolean true
+#d-i tasksel/first multiselect standard system utilities
+#d-i anna/standard_modules boolean true
 tasksel tasksel/first multiselect standard
+d-i apt-setup/use_mirror boolean true
+apt-setup-udeb apt-setup/services-select multiselect security, updates
 d-i pkgsel/include string salt-minion
 
 # Upgrade packages after installation
-d-i pkgsel/upgrade select safe-upgrade
+pkgsel pkgsel/upgrade select safe-upgrade
 
 popularity-contest popularity-contest/participate boolean false
 
@@ -58,3 +69,9 @@ d-i grub-installer/bootdev string default
 
 # Skip last dialog to finish up installation
 d-i finish-install/reboot_in_progress note
+
+# APT asks us to scan another CD/DVD, we don't want that
+apt-cdrom-setup apt-setup/cdrom/set-next boolean false
+d-i apt-setup/cdrom/set-first boolean false
+d-i apt-setup/cdrom/set-next boolean false
+d-i apt-setup/cdrom/set-failed boolean false
