@@ -32,6 +32,7 @@ d-i time/zone string Europe/Vienna
 d-i clock-setup/ntp boolean true
 
 # Partions Stuff
+#d-i partman-auto/disk string /dev/vda
 d-i partman-auto/method string lvm
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
@@ -70,8 +71,21 @@ d-i grub-installer/bootdev string default
 # Skip last dialog to finish up installation
 d-i finish-install/reboot_in_progress note
 
+# Eject after installation
+d-i cdrom-detect/eject boolean true
+
 # APT asks us to scan another CD/DVD, we don't want that
 apt-cdrom-setup apt-setup/cdrom/set-next boolean false
 d-i apt-setup/cdrom/set-first boolean false
 d-i apt-setup/cdrom/set-next boolean false
 d-i apt-setup/cdrom/set-failed boolean false
+
+d-i preseed/late_command string \
+  cp /cdrom/simple-cdd/setup.sh /target/usr/sbin/; \
+  cp /cdrom/simple-cdd/setup_intarget.sh /target/usr/sbin/; \
+  chmod +x /target/usr/sbin/setup.sh; \
+  chmod +x /target/usr/sbin/setup_intarget.sh; \
+  /target/usr/sbin/setup.sh; \
+  in-target /usr/sbin/setup_intarget.sh; \
+  rm /target/usr/sbin/setup.sh; \
+  rm /target/usr/sbin/setup_intarget.sh
